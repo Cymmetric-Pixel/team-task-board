@@ -157,6 +157,25 @@ test.describe('TTB-2-Edit-Task',() => {
     await expect(taskPage.taskList.taskItemByText(taskName).getByText('Title is required.')).toBeVisible();
     
   });
+  
+  test('Edit task - Cancel', async ({ page }) => {
+    taskName = `${taskName} - Cancel`;
+    let priority:Priority = 'Medium';
+
+    const taskPage = new TaskPage(page);
+    await taskPage.goto();
+    await taskPage.taskForm.addTask(taskName, priority, today);
+    await taskPage.taskList.validateTaskFields(taskName, priority, today)
+
+    let newTaskName = taskName + " - edited"
+    let newPriority:Priority = 'High'
+    await taskPage.taskList.editButtonForTask(taskName).click()
+    await taskPage.taskList.editTask(taskName, newTaskName, newPriority, tomorrow);
+    await taskPage.taskList.cancelButtonForTask(taskName).click();
+
+    await taskPage.taskList.validateTaskFields(taskName, priority, today)
+
+  });
 
 });
 
