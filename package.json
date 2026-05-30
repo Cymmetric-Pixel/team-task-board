@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
+    "test": "npx playwright test",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview"

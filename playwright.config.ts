@@ -12,6 +12,7 @@ export default defineConfig({
   testDir: './tests',
   testMatch: /.*\.test\.ts/, 
 
+
   fullyParallel: false,
   
   retries: 0,
@@ -23,6 +24,7 @@ export default defineConfig({
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
     baseURL: 'http://localhost:5173/',
+    headless: false,
 
     trace: 'on',
     screenshot: 'only-on-failure',
