@@ -6,11 +6,13 @@ export class TaskPage {
   readonly page: Page;
   readonly taskForm: TaskForm;
   readonly toolBar: ToolBar;
+  readonly taskList: TaskList
 
   constructor(page: Page) {
     this.page = page;
     this.taskForm = new TaskForm(page);
     this.toolBar = new ToolBar(page);
+    this.taskList = new TaskList(page)
   }
 
   async goto() {
@@ -34,10 +36,12 @@ export class TaskForm {
     this.dueDate = this.form.getByRole('textbox', { name: 'Due date' });
     this.submitButton = this.form.getByRole('button', { name: 'Add task' });
   }
-  async fillForm(taskName: string, priority: Priority, dueDate: string) {
+  async addTask(taskName: string, priority: Priority, dueDate?: string) {
     await this.taskInput.fill(taskName);
     await this.priorityDropdown.selectOption(priority);
-    await this.dueDate.fill(dueDate);
+    if (dueDate !== undefined){
+      await this.dueDate.fill(dueDate!);
+    }
     await this.submitButton.click();
   }
 }
@@ -58,4 +62,57 @@ export class ToolBar {
     this.ActiveFilter = this.toolBar.locator('[class="filters"]').getByText('Active');
     this.CompleteFilter = this.toolBar.locator('[class="filters"]').getByText('Complete');
   }
+}
+
+
+export class TaskList {
+  readonly page: Page;
+  readonly taskList: Locator;
+  readonly taskItems: Locator;
+
+
+  constructor(page: Page) {
+    this.page = page
+    this.taskList = page.locator('[class="task-list"]');
+    this.taskItems = this.taskList.locator('[class="task-item"]');
+  }
+
+  taskItemByText(taskName: string): Locator {
+    return this.taskItems.filter({
+      has: this.page.getByTitle(taskName, { exact: true }),
+    });
+  }
+
+  editButtonForTask(taskName: string): Locator {
+    return this.taskItemByText(taskName).getByRole('button', { name: 'Edit' });
+  }
+
+  async editTask(originalTaskName: string, newTaskName: string, newPriority: Priority, dueDate?: string) {
+    let taskItem = this.taskItemByText(originalTaskName)
+    await taskItem.getByRole('textbox', { name: 'Edit title' }).fill(newTaskName);
+    await taskItem.getByLabel('Edit priority').selectOption(newPriority);
+    if (dueDate !== undefined){
+      await taskItem.getByRole('textbox', { name: 'Edit due date' }).fill(dueDate!);
+    }
+  }
+
+  //need a validate edited fields function
+  //need a validation function for newly created tasks that will reload the page
+
+  deleteButtonForTask(taskName: string): Locator {
+    return this.taskItemByText(taskName).getByRole('button', { name: 'Delete' });
+  }
+
+  saveButtonForTask(taskName: string): Locator {
+    return this.taskItemByText(taskName).getByRole('button', { name: 'Save' });
+  }
+
+  cancelButtonForTask(taskName: string): Locator {
+    return this.taskItemByText(taskName).getByRole('button', { name: 'Cancel' });
+  }
+
+  closeButtonForTask(taskName: string): Locator {
+    return this.taskItemByText(taskName).getByRole('button', { name: 'Close' });
+  }
+
 }
