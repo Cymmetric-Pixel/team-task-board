@@ -108,6 +108,25 @@ export class TaskList {
 
   }
 
+  async validateTaskDelete(taskName: string, priority: Priority, dueDate?: string) {
+    let expectedDate: string;
+    if (dueDate == undefined){
+      expectedDate = 'No due date'
+    }
+    else{
+      expectedDate = `Due ${dueDate}`
+    }
+    await expect(this.taskItemByText(taskName)).not.toBeVisible();
+    await expect(this.taskItemByText(taskName).locator(`[class*="priority"]`).getByText(priority)).not.toBeVisible();
+    await expect(this.taskItemByText(taskName).getByText(expectedDate)).not.toBeVisible();
+
+    await this.page.reload();
+    
+    await expect(this.taskItemByText(taskName)).not.toBeVisible();
+    await expect(this.taskItemByText(taskName).locator(`[class*="priority"]`).getByText(priority)).not.toBeVisible();
+    await expect(this.taskItemByText(taskName).getByText(expectedDate)).not.toBeVisible();
+  }
+
   editButtonForTask(taskName: string): Locator {
     return this.taskItemByText(taskName).getByRole('button', { name: 'Edit' });
   }

@@ -157,7 +157,7 @@ test.describe('TTB-2-Edit-Task',() => {
     await expect(taskPage.taskList.taskItemByText(taskName).getByText('Title is required.')).toBeVisible();
     
   });
-  
+
   test('Edit task - Cancel', async ({ page }) => {
     taskName = `${taskName} - Cancel`;
     let priority:Priority = 'Medium';
@@ -180,21 +180,46 @@ test.describe('TTB-2-Edit-Task',() => {
 });
 
 test.describe('TTB-3-Delete-Task',() => {
-  /**
-   *  Clicking Edit on a task reveals an inline editor with the current title, priority, and due date pre-filled.
- Clicking Save updates the task in the list and persists the change.
- Clicking Cancel closes the editor and discards changes.
- Edit reuses the same validation rules as create (see TTB-1) — whitespace-only titles, invalid priorities, and past due dates are all rejected with an inline error.
- The task's updatedAt timestamp is bumped on save.
-   */
-
-  test('Create tasks', async ({ page }) => {
+/**
+ *  Clicking Delete on a task removes it from the visible list immediately.
+ The deletion is persisted. After a full page refresh, the task is still gone.
+ Deleting one task does not affect any other task's title, priority, due date, or completion state.
+ Deleting the last task in the list shows the empty-state message.
+ */
+  test('Delete task - 1 Task', async ({ page }) => {
+    let taskName = `Delete Task 1`;
+    let priority:Priority = 'Medium';
     const taskPage = new TaskPage(page);
     await taskPage.goto();
-    await taskPage.taskForm.addTask('Test Task Low', 'Low', '2026-06-03');
-    await expect(taskPage.taskList.taskItemByText('Test Task Low')).toBeVisible();
-    await taskPage.page.reload();
-    await expect(taskPage.taskList.taskItemByText('Test Task Low')).toBeVisible();
+    await taskPage.taskForm.addTask(taskName, priority);
+    await taskPage.taskList.validateTaskFields(taskName, priority)
+
+    await taskPage.taskList.deleteButtonForTask(taskName).click();
+    await taskPage.taskList.validateTaskDelete(taskName, priority); //validates the right one got deleted
+    
+    await expect(taskPage.page.getByText('No tasks to show.')).toBeVisible();//No tasks to show. means all got deleted
+
+  });
+
+  test('Delete task - 2 Tasks', async ({ page }) => {
+    let taskName = `Delete Task 1`;
+    let taskName2 = `Delete Task 2`;
+    let priority:Priority = 'Medium';
+    const taskPage = new TaskPage(page);
+    await taskPage.goto();
+    await taskPage.taskForm.addTask(taskName, priority);
+    await taskPage.taskList.validateTaskFields(taskName, priority)
+    await taskPage.taskForm.addTask(taskName2, priority);
+    await taskPage.taskList.validateTaskFields(taskName2, priority)
+
+    await taskPage.taskList.deleteButtonForTask(taskName).click();
+    await taskPage.taskList.validateTaskDelete(taskName, priority); //validates the right one got deleted
+    await taskPage.taskList.validateTaskFields(taskName2, priority);// validates the other one stays
+    
+    await taskPage.taskList.deleteButtonForTask(taskName2).click();
+    await taskPage.taskList.validateTaskDelete(taskName2, priority); //validates the right one got deleted
+
+    await expect(taskPage.page.getByText('No tasks to show.')).toBeVisible();//No tasks to show. means all got deleted
 
   });
 
