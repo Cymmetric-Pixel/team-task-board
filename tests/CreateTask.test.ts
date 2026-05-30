@@ -25,6 +25,7 @@ test.describe('TTB-1-Create-Task',() => {
     // let taskLocator = page.getByTitle('Create Task Low', { exact: true })
     // page.locator('[class="task-list"]').locator('[class="task-item"]').filter({ has: taskPage.taskList.taskItems.page.getByTitle('Create Task Low', { exact: true }) })
     for(let priority of priorities){
+      let taskName = 'Create Task'
       taskName = `${taskName} ${priority}`
 
       await taskPage.taskForm.addTask(taskName, priority, today);
