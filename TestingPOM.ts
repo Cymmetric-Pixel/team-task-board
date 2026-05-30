@@ -1,6 +1,10 @@
 import { expect, Locator, Page } from '@playwright/test';
 
 export type Priority = 'High' | 'Medium' | 'Low';
+export type TestTask = {
+  name: string;
+  priority: Priority;
+};
 
 export class TaskPage {
   readonly page: Page;
@@ -48,7 +52,7 @@ export class TaskForm {
 
 export class ToolBar {
   readonly toolBar: Locator;
-  readonly search: Locator;
+  readonly searchBox: Locator;
   readonly AllFilter: Locator;
   readonly ActiveFilter: Locator;
   readonly CompleteFilter: Locator;
@@ -57,11 +61,16 @@ export class ToolBar {
     this.toolBar = page.locator('[class="toolbar"]');
 
     // Scoped inside the toolbar
-    this.search = this.toolBar.locator('input[type="search"]');
+    this.searchBox = this.toolBar.locator('input[type="search"]');
     this.AllFilter = this.toolBar.locator('[class="filters"]').getByText('All');
     this.ActiveFilter = this.toolBar.locator('[class="filters"]').getByText('Active');
     this.CompleteFilter = this.toolBar.locator('[class="filters"]').getByText('Complete');
   }
+
+  async search(searchTerm: string){
+    await this.searchBox.fill(searchTerm);
+  }
+
 }
 
 
@@ -155,7 +164,19 @@ export class TaskList {
   closeButtonForTask(taskName: string): Locator {
     return this.taskItemByText(taskName).getByRole('button', { name: 'Close' });
   }
+  completionToggleForTask(taskName: string): Locator {
+    return this.taskItemByText(taskName).getByRole('checkbox');
+  }
 
+  async getAllTasks(){
+    return this.taskItems.all()
+  }
+  async confirmSearch(searchTerm: string){
+    let tasks = await this.getAllTasks()
+    for(let task of tasks){
+      expect(task.getByText(searchTerm)).toBeVisible();
+    }
+  }
 }
 
 
