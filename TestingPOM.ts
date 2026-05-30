@@ -1,6 +1,6 @@
-import { Locator, Page } from '@playwright/test';
+import { expect, Locator, Page } from '@playwright/test';
 
-type Priority = 'High' | 'Medium' | 'Low';
+export type Priority = 'High' | 'Medium' | 'Low';
 
 export class TaskPage {
   readonly page: Page;
@@ -73,14 +73,39 @@ export class TaskList {
 
   constructor(page: Page) {
     this.page = page
-    this.taskList = page.locator('[class="task-list"]');
-    this.taskItems = this.taskList.locator('[class="task-item"]');
+    this.taskList = page.locator('[class*="task-list"]');
+    this.taskItems = this.taskList.locator('[class*="task-item"]');
   }
 
+  // async taskItemByText(taskName: string): Promise<Locator> {
+  //   return this.taskItems.filter({
+  //     has: this.page.getByTitle(taskName, { exact: true }),
+  //   });
+  // }
   taskItemByText(taskName: string): Locator {
     return this.taskItems.filter({
-      has: this.page.getByTitle(taskName, { exact: true }),
+      hasText: taskName,
     });
+  }
+
+  async validateTaskFields(taskName: string, priority: Priority, dueDate?: string) {
+    let expectedDate: string;
+    if (dueDate == undefined){
+      expectedDate = 'No due date'
+    }
+    else{
+      expectedDate = `Due ${dueDate}`
+    }
+    await expect(this.taskItemByText(taskName)).toBeVisible();
+    await expect(this.taskItemByText(taskName).locator(`[class*="priority"]`).getByText(priority)).toBeVisible();
+    await expect(this.taskItemByText(taskName).getByText(expectedDate)).toBeVisible();
+
+    await this.page.reload();
+    
+    await expect(this.taskItemByText(taskName)).toBeVisible();
+    await expect(this.taskItemByText(taskName).locator(`[class*="priority"]`).getByText(priority)).toBeVisible();
+    await expect(this.taskItemByText(taskName).getByText(expectedDate)).toBeVisible();
+
   }
 
   editButtonForTask(taskName: string): Locator {
@@ -95,9 +120,6 @@ export class TaskList {
       await taskItem.getByRole('textbox', { name: 'Edit due date' }).fill(dueDate!);
     }
   }
-
-  //need a validate edited fields function
-  //need a validation function for newly created tasks that will reload the page
 
   deleteButtonForTask(taskName: string): Locator {
     return this.taskItemByText(taskName).getByRole('button', { name: 'Delete' });
@@ -115,4 +137,19 @@ export class TaskList {
     return this.taskItemByText(taskName).getByRole('button', { name: 'Close' });
   }
 
+}
+
+
+export function formatLocalDate(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+}
+
+export function addOrSubtractDays(date: Date, days: number): Date {
+  const newDate = new Date(date);
+  newDate.setDate(newDate.getDate() + days);
+  return newDate;
 }
