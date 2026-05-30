@@ -21,8 +21,8 @@ test('Sort tasks', async ({ page }) => {
     }
 
     let tasks = await taskPage.taskList.getAllTasks()
-    await expect(tasks[0].locator(`[class*="priority"]`)).toContainText('High');
-    await expect(tasks[0].locator(`[class*="priority"]`)).toContainText('Medium');
-    await expect(tasks[0].locator(`[class*="priority"]`)).toContainText('Low');
+    await expect(tasks[0].locator(`[class*="priority"]`)).toContainText('High', {ignoreCase: true});
+    await expect(tasks[1].locator(`[class*="priority"]`)).toContainText('Medium', {ignoreCase: true});
+    await expect(tasks[2].locator(`[class*="priority"]`)).toContainText('Low', {ignoreCase: true});
 
 });

@@ -11,7 +11,7 @@ test('Search tasks', async ({ page }) => {
     const testTasks: TestTask[] = [
         { name: 'Random Search test', priority: 'Low' },
         { name: 'Gibberish to search', priority: 'Medium' },
-        { name: 'Blah Blah', priority: 'High' },
+        { name: 'Blah Blah search', priority: 'High' },
     ];
     const taskPage = new TaskPage(page);
     await taskPage.goto();
@@ -29,5 +29,8 @@ test('Search tasks', async ({ page }) => {
 
     await taskPage.toolBar.search('Blah');
     await taskPage.taskList.confirmSearch('Blah');
+
+    await taskPage.toolBar.search('search');
+    await taskPage.taskList.confirmSearch('search');
 
 });
