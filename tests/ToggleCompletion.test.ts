@@ -9,6 +9,7 @@ test('Toggle Completion task', async ({ page }) => {
     await taskPage.taskForm.addTask(taskName, priority);
     await taskPage.taskList.validateTaskFields(taskName, priority)
     await taskPage.taskList.completionToggleForTask(taskName).check();
+    await taskPage.taskList.validateTaskFields(taskName, priority)
     await taskPage.toolBar.CompleteFilter.click();
     await taskPage.taskList.validateTaskFields(taskName, priority)
 
