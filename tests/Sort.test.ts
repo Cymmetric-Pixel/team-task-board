@@ -1,10 +1,8 @@
-import { test, expect } from '@playwright/test';
-import { addOrSubtractDays, formatLocalDate, Priority, TaskPage, TestTask } from '../TestingPOM';
+import { expect, test } from '@playwright/test';
+import { formatLocalDate, TaskPage, TestTask } from '../TestingPOM';
 
 const today = formatLocalDate(new Date());
-const yesterday = formatLocalDate(addOrSubtractDays(new Date(), -1));
-const tomorrow = formatLocalDate(addOrSubtractDays(new Date(), 1));
-  
+
   
 test('Sort tasks', async ({ page }) => {
     const testTasks: TestTask[] = [

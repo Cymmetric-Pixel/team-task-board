@@ -109,11 +109,16 @@ export class TaskList {
     await expect(this.taskItemByText(taskName).locator(`[class*="priority"]`).getByText(priority)).toBeVisible();
     await expect(this.taskItemByText(taskName).getByText(expectedDate)).toBeVisible();
 
-    await this.page.reload();
-    
-    await expect(this.taskItemByText(taskName)).toBeVisible();
-    await expect(this.taskItemByText(taskName).locator(`[class*="priority"]`).getByText(priority)).toBeVisible();
-    await expect(this.taskItemByText(taskName).getByText(expectedDate)).toBeVisible();
+    try{
+      await this.page.reload();
+      await expect(this.taskItemByText(taskName)).toBeVisible();
+      await expect(this.taskItemByText(taskName).locator(`[class*="priority"]`).getByText(priority)).toBeVisible();
+      await expect(this.taskItemByText(taskName).getByText(expectedDate)).toBeVisible();
+    }
+    catch{
+      throw new Error('Persistance Failed');
+    }
+
 
   }
 
@@ -129,11 +134,15 @@ export class TaskList {
     await expect(this.taskItemByText(taskName).locator(`[class*="priority"]`).getByText(priority)).not.toBeVisible();
     await expect(this.taskItemByText(taskName).getByText(expectedDate)).not.toBeVisible();
 
-    await this.page.reload();
-    
-    await expect(this.taskItemByText(taskName)).not.toBeVisible();
-    await expect(this.taskItemByText(taskName).locator(`[class*="priority"]`).getByText(priority)).not.toBeVisible();
-    await expect(this.taskItemByText(taskName).getByText(expectedDate)).not.toBeVisible();
+    try {
+      await this.page.reload(); 
+      await expect(this.taskItemByText(taskName)).not.toBeVisible();
+      await expect(this.taskItemByText(taskName).locator(`[class*="priority"]`).getByText(priority)).not.toBeVisible();
+      await expect(this.taskItemByText(taskName).getByText(expectedDate)).not.toBeVisible(); 
+    }
+    catch{
+      throw new Error('Persistance Failed');
+    }
   }
 
   editButtonForTask(taskName: string): Locator {
