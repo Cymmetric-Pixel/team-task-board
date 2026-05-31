@@ -125,6 +125,6 @@ Deletion of a task does not survive page refresh.
 
 
 # Holes in testing
-Filters 
-Save feedback
-Unit tests were not written and performed
+Filters.
+Save feedback.
+Unit tests were not written and performed.
