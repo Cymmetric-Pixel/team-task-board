@@ -1,24 +1,33 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { TaskInput, TaskPriority } from "../types/task";
 import { validateTaskInput } from "../logic/taskValidation";
 
 type Props = {
   onCreate: (input: TaskInput) => Promise<void> | void;
   disabled?: boolean;
+  resetKey?: number;
 };
 
-export function TaskForm({ onCreate, disabled }: Props) {
+export function TaskForm({ onCreate, disabled, resetKey }: Props) {
   const [title, setTitle] = useState("");
   const [priority, setPriority] = useState<TaskPriority>("medium");
   const [dueDate, setDueDate] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    setTitle("");
+    setPriority("medium");
+    setDueDate("");
+    setError(null);
+  }, [resetKey]);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
 
+    const trimmedTitle = title.trim();
     const input: TaskInput = {
-      title,
+      title: trimmedTitle,
       priority,
       dueDate: dueDate || null,
     };
@@ -30,9 +39,6 @@ export function TaskForm({ onCreate, disabled }: Props) {
     }
 
     await onCreate(input);
-    setTitle("");
-    setPriority("medium");
-    setDueDate("");
   }
 
   return (

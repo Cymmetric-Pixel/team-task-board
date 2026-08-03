@@ -92,5 +92,6 @@ export async function deleteTask(id: string): Promise<Task[]> {
   }
   const tasks = readFromStorage();
   const remaining = tasks.filter((t) => t.id !== id);
+  writeToStorage(remaining);
   return delay(remaining);
 }

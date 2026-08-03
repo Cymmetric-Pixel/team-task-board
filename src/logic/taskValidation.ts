@@ -7,7 +7,9 @@ export type ValidationResult =
 const VALID_PRIORITIES: TaskPriority[] = ["low", "medium", "high"];
 
 export function validateTaskInput(input: TaskInput): ValidationResult {
-  if (input.title.length === 0) {
+  const trimmedTitle = input.title.trim();
+
+  if (trimmedTitle.length === 0) {
     return { valid: false, error: "Title is required." };
   }
 
@@ -19,6 +21,13 @@ export function validateTaskInput(input: TaskInput): ValidationResult {
     const parsed = new Date(input.dueDate);
     if (Number.isNaN(parsed.getTime())) {
       return { valid: false, error: "Due date is invalid." };
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (parsed < today) {
+      return { valid: false, error: "Due date must be today or later." };
     }
   }
 
