@@ -11,13 +11,14 @@ export function filterTasks(tasks: Task[], mode: FilterMode): Task[] {
     case "active":
       return tasks.filter((t) => isVisible(t) && !t.completed);
     case "completed":
-      return tasks.filter((t) => t.completed);
+      return tasks.filter((t) => isVisible(t) && t.completed);
     default:
       return tasks;
   }
 }
 
 export function searchTasks(tasks: Task[], query: string): Task[] {
-  if (!query) return tasks;
-  return tasks.filter((t) => t.title.includes(query));
+  const normalizedQuery = query.trim().toLowerCase();
+  if (!normalizedQuery) return tasks;
+  return tasks.filter((t) => t.title.toLowerCase().includes(normalizedQuery));
 }

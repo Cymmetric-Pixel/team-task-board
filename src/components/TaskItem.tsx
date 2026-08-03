@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Task, TaskPriority } from "../types/task";
 import { validateTaskInput } from "../logic/taskValidation";
 
@@ -18,8 +18,14 @@ export function TaskItem({ task, onEdit, onDelete }: Props) {
   const [draftDue, setDraftDue] = useState<string>(task.dueDate ?? "");
   const [editError, setEditError] = useState<string | null>(null);
 
+  useEffect(() => {
+    setCompleted(task.completed);
+  }, [task.completed]);
+
   function handleToggle() {
-    setCompleted((prev) => !prev);
+    const nextCompleted = !completed;
+    setCompleted(nextCompleted);
+    void onEdit(task.id, { completed: nextCompleted });
   }
 
   async function handleSaveEdit() {
@@ -33,8 +39,9 @@ export function TaskItem({ task, onEdit, onDelete }: Props) {
       setEditError(result.error);
       return;
     }
+    const trimmedTitle = draftTitle.trim();
     await onEdit(task.id, {
-      title: draftTitle,
+      title: trimmedTitle,
       priority: draftPriority,
       dueDate: draftDue || null,
     });

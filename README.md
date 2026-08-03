@@ -46,4 +46,19 @@ npm run build
 npm run preview
 ```
 
+## QA and reliability notes
+
+A lightweight QA pass is already captured in [BUGS_REPORT.md](BUGS_REPORT.md). The current test strategy covers:
+
+- business logic with Vitest for validation, filtering, and sorting
+- component-level behavior with React Testing Library for the task board workflow
+- critical user journeys with Playwright end-to-end tests
+- CI execution through [.github/workflows/ci.yml](.github/workflows/ci.yml)
+
+A few quality notes from the review:
+
+- the app is intentionally simple and uses a localStorage-backed fake API, so persistence should be treated as temporary
+- validation is currently enforced in the shared logic layer, which keeps the rules consistent across add/edit flows
+- future reliability work should focus on contract tests around the API layer and a more realistic persistence strategy if the app grows
+
 ---

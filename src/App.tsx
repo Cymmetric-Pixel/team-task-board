@@ -21,6 +21,7 @@ export default function App() {
   const [query, setQuery] = useState("");
   const [banner, setBanner] = useState<Banner>(null);
   const [busy, setBusy] = useState(false);
+  const [formResetKey, setFormResetKey] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -49,10 +50,11 @@ export default function App() {
     try {
       const created = await createTask(input);
       setTasks((prev) => [...prev, created]);
+      setFormResetKey((prev) => prev + 1);
       setBanner({ type: "success", text: "Task added." });
     } catch (err) {
       console.error(err);
-      setBanner({ type: "success", text: "Task added." });
+      setBanner({ type: "error", text: "Failed to add task." });
     } finally {
       setBusy(false);
     }
@@ -102,7 +104,7 @@ export default function App() {
       {banner && <div className={`banner ${banner.type}`}>{banner.text}</div>}
 
       <div className="card">
-        <TaskForm onCreate={handleCreate} disabled={busy} />
+        <TaskForm onCreate={handleCreate} disabled={busy} resetKey={formResetKey} />
       </div>
 
       <div className="card">
